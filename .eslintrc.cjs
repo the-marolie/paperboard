@@ -18,11 +18,14 @@ module.exports = {
   plugins: ["react"],
   rules: {
     "react/react-in-jsx-scope": "off",
+    "react/button-has-type": "off",
     "react/prop-types": "off",
     "require-jsdoc": "off",
     "no-invalid-this": "off",
     "max-len": "off",
     "object-curly-spacing": ["error", "always"],
+    "prettier/prettier": ["error", { endOfLine: "auto" }],
+    "import/prefer-default-export": "off",
   },
   settings: {
     react: {
