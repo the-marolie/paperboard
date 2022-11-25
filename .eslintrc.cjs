@@ -26,6 +26,7 @@ module.exports = {
     "object-curly-spacing": ["error", "always"],
     "prettier/prettier": ["error", { endOfLine: "auto" }],
     "import/prefer-default-export": "off",
+    "no-param-reassign": "off",
   },
   settings: {
     react: {
