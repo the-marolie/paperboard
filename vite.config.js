@@ -10,6 +10,7 @@ export default defineConfig({
     alias: {
       "@C": path.resolve(__dirname, "./src/components"),
       "@A": path.resolve(__dirname, "./src/assets"),
+      "@S": path.resolve(__dirname, "./src/store"),
     },
   },
   plugins: [react(), reactScopedCssPlugin()],

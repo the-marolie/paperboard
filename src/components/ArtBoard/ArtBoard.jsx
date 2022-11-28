@@ -1,12 +1,15 @@
 import { useEffect } from "react";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import { fabric } from "fabric";
+import { useGlobalStore } from "@S";
 
 function ArtBoard() {
   const { editor, onReady } = useFabricJSEditor();
+  const setEditor = useGlobalStore((state) => state.setEditor);
 
   useEffect(() => {
     if (editor?.canvas) {
+      setEditor(editor);
       editor?.canvas.setBackgroundColor(
         "white",
         editor?.canvas.renderAll.bind(editor.canvas)
