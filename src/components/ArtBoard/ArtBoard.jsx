@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
 import { fabric } from "fabric";
 import { useGlobalStore } from "@S";
+import initAligningGuidelines from "@/lib/alignGuidelines";
+import initCenteringGuidelines from "@/lib/centerGuidelines";
 
 function ArtBoard() {
   const { editor, onReady } = useFabricJSEditor();
@@ -17,6 +19,8 @@ function ArtBoard() {
       // enable canvas pan
       editor.canvas.allowTouchScrolling = true;
       initEventListeners(editor.canvas);
+      initAligningGuidelines(editor.canvas);
+      initCenteringGuidelines(editor.canvas);
     }
   }, [editor]);
 
