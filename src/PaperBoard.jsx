@@ -7,7 +7,7 @@ function PaperBoard() {
   return (
     <>
       <Header />
-      <section className="board-container">
+      <section className="paperboard-container">
         <ArtBoard />
       </section>
     </>

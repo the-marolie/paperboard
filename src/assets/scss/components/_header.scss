@@ -1,0 +1,20 @@
+header {
+  background-color: var(--primary-color-light);
+  padding: $header-padding;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .paperboard-logo {
+    width: 300px;
+  }
+
+  .header-toolbar {
+    display: grid;
+    gap: 2;
+
+    button {
+      border: 1px solid var(--btn-font);
+    }
+  }
+}

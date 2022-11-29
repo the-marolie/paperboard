@@ -1,0 +1,14 @@
+%button {
+  padding: $btn-padding;
+  font-size: 1rem;
+  line-height: normal;
+  border-radius: $btn-radius;
+}
+
+@mixin button() {
+  @extend %button;
+}
+
+button {
+  @include button;
+}

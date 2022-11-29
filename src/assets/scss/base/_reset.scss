@@ -105,3 +105,18 @@ input {
   -webkit-appearance: none;
   border-radius: 0;
 }
+
+img {
+  max-width: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+button {
+  background: none;
+  outline: none;
+  border-radius: 0;
+  border: none;
+  cursor: pointer;
+  color: var(--btn-font);
+}

@@ -2,17 +2,28 @@
   --primary-color: #242c46;
   --brand-color: #f14667;
   --font-color: #dcdcdc;
+  --primary-color-light: #303852;
+  --btn-font: #9fa8c5;
 }
 
-[data-theme="dark"] {
+[data-theme="light"] {
   --primary-color: #fcfcfc;
   --brand-color: #f14667;
   --font-color: #545454;
+  --primary-color-light: #ffffff;
+  --btn-font: #9fa8c5;
 }
 
 body {
   background-color: var(--primary-color);
   color: var(--font-color);
+
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
   font-size: 16px;
   line-height: 1.5;
