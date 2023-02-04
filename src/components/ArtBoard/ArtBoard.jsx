@@ -1,149 +1,95 @@
-import { useEffect } from "react";
-import { FabricJSCanvas, useFabricJSEditor } from "fabricjs-react";
+import React, { useState, useEffect } from "react";
 import { fabric } from "fabric";
-import { useGlobalStore } from "@S";
-import initAligningGuidelines from "@/lib/alignGuidelines";
-import initCenteringGuidelines from "@/lib/centerGuidelines";
+import jsPDF from "jspdf";
 
-function ArtBoard() {
-  const { editor, onReady } = useFabricJSEditor();
-  const setEditor = useGlobalStore((state) => state.setEditor);
+
+const ArtBoard = () => {
+  const [codePreview, setCodePreview] = useState("");
 
   useEffect(() => {
-    if (editor?.canvas) {
-      setEditor(editor);
-      editor?.canvas.setBackgroundColor("white", editor?.canvas.renderAll.bind(editor.canvas));
-      // set canvas size to 100% of parent
-      editor?.canvas.setWidth("800");
-      editor?.canvas.setHeight("800");
-      // enable canvas pan
-      editor.canvas.allowTouchScrolling = true;
-      initEventListeners(editor.canvas);
-      initAligningGuidelines(editor.canvas);
-      initCenteringGuidelines(editor.canvas);
-    }
-  }, [editor]);
+    const getPPmm = () => {
+      const dpi = window.devicePixelRatio;
+      const inch = 25.4;
+      return dpi * inch;
+    };
 
-  const initEventListeners = (canvas) => {
-    canvas.on("mouse:down", function (opt) {
-      const evt = opt.e;
-      if (evt.altKey === true) {
-        canvas.isDragging = true;
-        canvas.selection = false;
-        canvas.lastPosX = evt.clientX;
-        canvas.lastPosY = evt.clientY;
+    const ppmm = getPPmm();
+    const A4_WIDTH = 210 / 25.4 * ppmm;
+    const A4_HEIGHT = 297 / 25.4 * ppmm;
+
+    const canvas = new fabric.Canvas("canvas", {
+      backgroundColor: "#fff",
+      width: A4_WIDTH,
+      height: A4_HEIGHT,
+      scaleX: 0,
+      scaleY: 0,
+    });
+
+    const text = new fabric.IText("Hello, World!", {
+      left: 50,
+      top: 50,
+      fontSize: 10,
+    });
+
+    canvas.add(text);
+
+    canvas.on("object:added", function(options) {
+      if (options.target.left < 0 || options.target.top < 0) {
+        options.target.left = 0;
+        options.target.top = 0;
+      } else if (
+        options.target.left + options.target.width > canvas.width ||
+        options.target.top + options.target.height > canvas.height
+      ) {
+        options.target.left = canvas.width - options.target.width;
+        options.target.top = canvas.height - options.target.height;
       }
     });
-    canvas.on("mouse:move", function (opt) {
-      if (canvas.isDragging) {
-        const { e } = opt;
-        const vpt = canvas.viewportTransform;
-        vpt[4] += e.clientX - canvas.lastPosX;
-        vpt[5] += e.clientY - canvas.lastPosY;
-        canvas.requestRenderAll();
-        canvas.lastPosX = e.clientX;
-        canvas.lastPosY = e.clientY;
-      }
+
+    canvas.on("object:modified", function(e) {
+      let scaleFactor = text.getObjectScaling();
+      // get the scale factor of the fabric js text object
+
+
+
+  
+  console.log(scaleFactor);
+      const jspdfWidth = 210; // end x coordinate of the jspdf document in millimeters
+const jspdfHeight = 297; // end y coordinate of the jspdf document in millimeters
+const scaleFactorX = jspdfWidth / A4_WIDTH;
+const scaleFactorY = jspdfHeight / A4_HEIGHT;
+console.log(text.width/2);
+      const convertedLeft = (text.left * scaleFactorX) ;
+const convertedTop = (text.top * scaleFactorY);
+let fabricjsFontSize = 10; // Example font size in FabricJS
+
+let jspdfFontSize = fabricjsFontSize * scaleFactor; 
+
+      const pdf = new jsPDF("portrait", "mm", "a4");
+      pdf.text(`left: ${convertedLeft}mm, top: ${convertedTop}mm`, 10, 10);
+      const code = `const pdf = new jsPDF("p", "mm", "a4");
+      
+pdf.text(${convertedLeft}, ${convertedTop}, "${text.text}", );
+pdf.save("document.pdf");`;
+      setCodePreview(code);
+     
     });
-    canvas.on("mouse:up", function (opt) {
-      // on mouse up we want to recalculate new interaction
-      // for all objects, so we call setViewportTransform
-      canvas.setViewportTransform(canvas.viewportTransform);
-      canvas.isDragging = false;
-      canvas.selection = true;
-    });
+  }, []);
 
-    canvas.on("mouse:wheel", function (opt) {
-      const delta = opt.e.deltaY;
-      let zoom = canvas.getZoom();
-      zoom *= 0.999 ** delta;
-      if (zoom > 20) zoom = 20;
-      if (zoom < 0.01) zoom = 0.01;
-      canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-      opt.e.preventDefault();
-      opt.e.stopPropagation();
-    });
+  const handleDownload = () => {
+    
+    eval(codePreview);
+    
   };
-
-  // function to change artboard canvas size and auto zoom to fit canvas
-  const changeCanvasSize = (width, height) => {
-    editor.canvas.setWidth(width);
-    editor.canvas.setHeight(height);
-    editor.canvas.calcOffset();
-    editor.canvas.renderAll();
-    editor.canvas.setZoom(1);
-    editor.canvas.zoomToPoint(
-      new fabric.Point(editor.canvas.getWidth() / 2, editor.canvas.getHeight() / 2),
-      1
-    );
-  };
-
-  // function to zoom in and zoom out canvas
-  const zoomCanvas = (zoom) => {
-    editor?.canvas.setZoom(zoom);
-  };
-
-  // function to change canvas background color
-  const changeCanvasColor = (color) => {
-    editor?.canvas.setBackgroundColor(color, editor?.canvas.renderAll.bind(editor.canvas));
-  };
-
-  // function to pan canvas
-  const panCanvas = (x, y) => {
-    editor?.canvas.relativePan(new fabric.Point(x, y));
-  };
-
-  const onAddRectangle = () => {
-    editor?.addRectangle();
-  };
-
-  // function to add user input to canvas
-  const onAddText = () => {
-    editor?.addText("Sample text");
-  };
-
-  // function to change color of selected object
-  const changeColor = (color) => {
-    editor?.changeColor(color);
-  };
-
-  // function to change color of selected text object
-  const changeTextColor = (color) => {
-    editor?.changeTextColor(color);
-  };
-  // add a custom context menu to canvas
-  const onAddContextMenu = () => {
-    editor?.addContextMenu([
-      {
-        title: "Add Circle",
-        action: onAddCircle
-      },
-      {
-        title: "Add Rectangle",
-        action: onAddRectangle
-      },
-      {
-        title: "Add Text",
-        action: onAddText
-      },
-      {
-        title: "Change Color",
-        action: changeColor
-      },
-      {
-        title: "Change Text Color",
-        action: changeTextColor
-      }
-    ]);
-  };
+    
 
   return (
     <>
-      <button onClick={onAddRectangle}>Add Rectangle</button>
-      <button onClick={onAddText}>Add Text</button>
-      <FabricJSCanvas className="sample-canvas" onReady={onReady} />
+      <canvas id="canvas"></canvas>
+      <pre>{codePreview}</pre>
+      <button onClick={handleDownload}>Save</button>
     </>
   );
-}
+};
 
 export { ArtBoard };
