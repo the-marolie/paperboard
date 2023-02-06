@@ -7,9 +7,9 @@ function PaperBoard() {
   return (
     <>
       <Header />
-      <section className="paperboard-container">
+      <main>
         <ArtBoard />
-      </section>
+      </main>
     </>
   );
 }

@@ -62,6 +62,7 @@ function initAligningGuidelines(canvas) {
   });
 
   canvas.on("object:moving", function (e) {
+    
     const activeObject = e.target;
     const canvasObjects = canvas.getObjects();
     const activeObjectCenter = activeObject.getCenterPoint();
